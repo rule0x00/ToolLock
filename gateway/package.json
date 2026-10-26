@@ -1,0 +1,61 @@
+{
+  "name": "toollock-gateway",
+  "version": "1.0.0",
+  "description": "ToolLock MCP gateway: lock engine, proxy, audit log, admin API",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest build && node --enable-source-maps dist/main.js",
+    "start": "node --enable-source-maps dist/main.js",
+    "migrate": "nest build && node dist/main.js migrate",
+    "init-lock": "nest build && node dist/main.js init",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js"
+  },
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@nestjs/common": "^12.2.0",
+    "@nestjs/core": "^12.2.0",
+    "@nestjs/platform-express": "^12.2.0",
+    "pg": "^8.23.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.10",
+    "@nestjs/schematics": "^12.0.0",
+    "@nestjs/testing": "^12.2.0",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "^6.0.3"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "rootDir": ".",
+    "testRegex": "test/.*\\.spec\\.ts$",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
+    }
+  }
+}

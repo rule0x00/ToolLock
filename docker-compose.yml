@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-toollock}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-toollock}
+      POSTGRES_DB: ${POSTGRES_DB:-toollock}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  reviewer:
+    build: ./reviewer
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      REVIEWER_MODEL: ${REVIEWER_MODEL:-}
+    ports:
+      - "${REVIEWER_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  gateway:
+    build: ./gateway
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-toollock}:${POSTGRES_PASSWORD:-toollock}@postgres:5432/${POSTGRES_DB:-toollock}
+      PORT: 3000
+      MCP_CLIENT_TOKEN: ${MCP_CLIENT_TOKEN:?set MCP_CLIENT_TOKEN in .env}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      REVIEWER_URL: http://reviewer:8000
+    ports:
+      - "${GATEWAY_PORT:-3000}:3000"
+    volumes:
+      - ./gateway/toollock.config.json:/app/toollock.config.json:ro
+      - ./gateway/sandbox:/app/sandbox
+    depends_on:
+      postgres:
+        condition: service_healthy
+      reviewer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  dashboard:
+    build: ./dashboard
+    environment:
+      # Server-side fetches from the dashboard container to the gateway admin API.
+      GATEWAY_ADMIN_URL: http://gateway:3000
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    ports:
+      - "${DASHBOARD_PORT:-3001}:3000"
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+volumes:
+  pgdata:

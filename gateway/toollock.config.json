@@ -1,0 +1,6 @@
+{
+  "servers": [
+    { "id": "fs", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./sandbox"] }
+  ],
+  "policy": { "autoApproveCosmetic": true, "failClosed": true }
+}
