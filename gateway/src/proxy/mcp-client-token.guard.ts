@@ -1,6 +1,6 @@
-import { timingSafeEqual } from 'node:crypto';
 import { Inject, Injectable, UnauthorizedException, type CanActivate, type ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
+import { bearerMatches } from '../common/bearer.js';
 import { ENV } from '../config/config.module.js';
 import type { Env } from '../config/env.js';
 
@@ -10,14 +10,9 @@ export class McpClientTokenGuard implements CanActivate {
   constructor(@Inject(ENV) private readonly env: Env) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const token = this.env.MCP_CLIENT_TOKEN;
-    if (!token) throw new UnauthorizedException('MCP_CLIENT_TOKEN is not configured');
-    const header = context.switchToHttp().getRequest<Request>().headers.authorization ?? '';
-    const presented = Buffer.from(header.startsWith('Bearer ') ? header.slice(7) : '');
-    const expected = Buffer.from(token);
-    if (presented.length !== expected.length || !timingSafeEqual(presented, expected)) {
-      throw new UnauthorizedException('Missing or invalid bearer token');
-    }
+    if (!this.env.MCP_CLIENT_TOKEN) throw new UnauthorizedException('MCP_CLIENT_TOKEN is not configured');
+    const header = context.switchToHttp().getRequest<Request>().headers.authorization;
+    if (!bearerMatches(header, this.env.MCP_CLIENT_TOKEN)) throw new UnauthorizedException('Missing or invalid bearer token');
     return true;
   }
 }

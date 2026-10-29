@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
+import { LockModule } from '../lock/lock.module.js';
+import { CallLogService } from '../proxy/call-log.service.js';
+import { ActivityController } from './activity.controller.js';
+import { AdminTokenGuard } from './admin-token.guard.js';
 import { HealthController } from './health.controller.js';
+import { ToolsController } from './tools.controller.js';
 
-// AdminTokenGuard and the /api/* controllers arrive in build step 10.
 @Module({
-  controllers: [HealthController],
+  imports: [LockModule],
+  controllers: [HealthController, ToolsController, ActivityController],
+  providers: [AdminTokenGuard, CallLogService],
 })
 export class AdminModule {}
