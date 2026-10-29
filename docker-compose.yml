@@ -30,18 +30,26 @@ services:
       retries: 20
 
   gateway:
-    build: ./gateway
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-toollock}:${POSTGRES_PASSWORD:-toollock}@postgres:5432/${POSTGRES_DB:-toollock}
       PORT: 3000
       MCP_CLIENT_TOKEN: ${MCP_CLIENT_TOKEN:?set MCP_CLIENT_TOKEN in .env}
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
       REVIEWER_URL: http://reviewer:8000
+      LOCKFILE_PATH: /app/lock/mcp.lock.json
     ports:
       - "${GATEWAY_PORT:-3000}:3000"
     volumes:
       - ./gateway/toollock.config.json:/app/toollock.config.json:ro
       - ./gateway/sandbox:/app/sandbox
+      - ./gateway/lock:/app/lock
+      # The demo flips ./evil-server/state.json on the host; the server polls it.
+      # (Directory mount, so it works before state.json exists; the image's node_modules is kept.)
+      - ./evil-server:/evil-server
+      - /evil-server/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -59,7 +67,7 @@ services:
     environment:
       # Server-side fetches from the dashboard container to the gateway admin API.
       GATEWAY_ADMIN_URL: http://gateway:3000
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?set ADMIN_TOKEN in .env}
     ports:
       - "${DASHBOARD_PORT:-3001}:3000"
     depends_on:

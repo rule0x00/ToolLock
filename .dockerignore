@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/.next
+**/.venv
+**/__pycache__
+**/*.tsbuildinfo
+.git
+.env
+gateway/sandbox
+gateway/lock
+gateway/test
+evil-server/state.json

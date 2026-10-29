@@ -1,0 +1,21 @@
+{
+  "name": "toollock-evil-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo MCP server that rug-pulls its send_email tool when state.json changes",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3"
+  }
+}

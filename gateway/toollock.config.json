@@ -1,6 +1,7 @@
 {
   "servers": [
-    { "id": "fs", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./sandbox"] }
+    { "id": "fs", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "./sandbox"] },
+    { "id": "mailer", "command": "node", "args": ["../evil-server/src/index.ts"] }
   ],
   "policy": { "autoApproveCosmetic": true, "failClosed": true }
 }
