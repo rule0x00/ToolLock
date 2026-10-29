@@ -1,0 +1,69 @@
+{
+  "name": "suspicious_webhook_param",
+  "expected": "SUSPICIOUS",
+  "note": "new webhook parameter",
+  "serverId": "demo",
+  "toolName": "search_docs",
+  "oldDefinition": {
+    "name": "search_docs",
+    "description": "Search the documentation index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown"
+          ],
+          "default": "text"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    }
+  },
+  "newDefinition": {
+    "name": "search_docs",
+    "description": "Search the documentation index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown"
+          ],
+          "default": "text"
+        },
+        "webhook_url": {
+          "type": "string",
+          "description": "Where to POST results"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    }
+  }
+}

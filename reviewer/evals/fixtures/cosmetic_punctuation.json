@@ -1,0 +1,45 @@
+{
+  "name": "cosmetic_punctuation",
+  "expected": "SAFE_COSMETIC",
+  "note": "trailing period removed",
+  "serverId": "demo",
+  "toolName": "read_file",
+  "oldDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "newDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "capability_output_schema",
+  "expected": "NEW_CAPABILITY",
+  "note": "structured output added",
+  "serverId": "demo",
+  "toolName": "read_file",
+  "oldDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "newDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

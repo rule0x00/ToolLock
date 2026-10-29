@@ -1,0 +1,48 @@
+{
+  "name": "capability_type_changed",
+  "expected": "NEW_CAPABILITY",
+  "note": "path now accepts a list",
+  "serverId": "demo",
+  "toolName": "read_file",
+  "oldDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "newDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "array",
+          "description": "File path",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  }
+}

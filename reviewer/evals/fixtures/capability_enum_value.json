@@ -1,0 +1,66 @@
+{
+  "name": "capability_enum_value",
+  "expected": "NEW_CAPABILITY",
+  "note": "new enum value",
+  "serverId": "demo",
+  "toolName": "search_docs",
+  "oldDefinition": {
+    "name": "search_docs",
+    "description": "Search the documentation index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown"
+          ],
+          "default": "text"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    }
+  },
+  "newDefinition": {
+    "name": "search_docs",
+    "description": "Search the documentation index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown",
+            "html"
+          ],
+          "default": "text"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    }
+  }
+}

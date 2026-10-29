@@ -1,0 +1,65 @@
+{
+  "name": "cosmetic_key_order_only",
+  "expected": "SAFE_COSMETIC",
+  "note": "same definition, different key order",
+  "serverId": "demo",
+  "toolName": "search_docs",
+  "oldDefinition": {
+    "name": "search_docs",
+    "description": "Search the documentation index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown"
+          ],
+          "default": "text"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    }
+  },
+  "newDefinition": {
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Search terms"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results",
+          "default": 10
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "text",
+            "markdown"
+          ],
+          "default": "text"
+        }
+      },
+      "required": [
+        "query"
+      ]
+    },
+    "description": "Search the documentation index.",
+    "name": "search_docs"
+  }
+}

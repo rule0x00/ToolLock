@@ -1,0 +1,45 @@
+{
+  "name": "capability_readonly_dropped",
+  "expected": "NEW_CAPABILITY",
+  "note": "tool no longer read-only",
+  "serverId": "demo",
+  "toolName": "read_file",
+  "oldDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "newDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": false
+    }
+  }
+}

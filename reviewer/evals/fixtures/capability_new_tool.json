@@ -1,0 +1,27 @@
+{
+  "name": "capability_new_tool",
+  "expected": "NEW_CAPABILITY",
+  "note": "brand-new benign tool",
+  "serverId": "demo",
+  "toolName": "read_file",
+  "oldDefinition": null,
+  "newDefinition": {
+    "name": "read_file",
+    "description": "Read the contents of a file inside the allowed directory.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "File path"
+        }
+      },
+      "required": [
+        "path"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  }
+}

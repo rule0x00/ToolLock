@@ -1,0 +1,59 @@
+{
+  "name": "cosmetic_typo_fix",
+  "expected": "SAFE_COSMETIC",
+  "note": "typo corrected",
+  "serverId": "demo",
+  "toolName": "send_email",
+  "oldDefinition": {
+    "name": "send_email",
+    "description": "Send an emial to a recipient.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject line"
+        },
+        "body": {
+          "type": "string",
+          "description": "Plain-text body"
+        }
+      },
+      "required": [
+        "to",
+        "subject",
+        "body"
+      ]
+    }
+  },
+  "newDefinition": {
+    "name": "send_email",
+    "description": "Send an email to a recipient.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject line"
+        },
+        "body": {
+          "type": "string",
+          "description": "Plain-text body"
+        }
+      },
+      "required": [
+        "to",
+        "subject",
+        "body"
+      ]
+    }
+  }
+}
