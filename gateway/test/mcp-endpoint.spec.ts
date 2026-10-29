@@ -4,6 +4,8 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type { AddressInfo } from 'node:net';
 import { ENV } from '../src/config/config.module.js';
+import { LockEngineService } from '../src/lock/lock-engine.service.js';
+import { CallLogService } from '../src/proxy/call-log.service.js';
 import { McpClientTokenGuard } from '../src/proxy/mcp-client-token.guard.js';
 import { McpController } from '../src/proxy/mcp.controller.js';
 import { ProxyService } from '../src/proxy/proxy.service.js';
@@ -11,14 +13,24 @@ import { UpstreamService } from '../src/upstream/upstream.service.js';
 
 const TOKEN = 'test-token';
 
+const fsTools = [
+  { serverId: 'fs', tool: { name: 'read_file', description: 'Read a file', inputSchema: { type: 'object' as const } } },
+];
+
 const fakeUpstream = {
   serverIds: () => ['fs'],
-  listAllTools: async () => [
-    { serverId: 'fs', tool: { name: 'read_file', description: 'Read a file', inputSchema: { type: 'object' as const } } },
-  ],
+  onToolsChanged: () => {},
+  listAllTools: async () => fsTools,
+  listServerTools: async () => fsTools,
   callTool: async (serverId: string, name: string, args: unknown) => ({
     content: [{ type: 'text', text: JSON.stringify({ serverId, name, args }) }],
   }),
+};
+
+// Locking is covered in proxy-lock.spec.ts; here every tool is approved.
+const approveAllLock = {
+  sync: async (tools: typeof fsTools) =>
+    new Map(tools.map((t) => [`${t.serverId}__${t.tool.name}`, { status: 'approved', callable: true, currentHash: 'h' }])),
 };
 
 describe('/mcp (Streamable HTTP, stateless)', () => {
@@ -32,6 +44,8 @@ describe('/mcp (Streamable HTTP, stateless)', () => {
         ProxyService,
         McpClientTokenGuard,
         { provide: UpstreamService, useValue: fakeUpstream },
+        { provide: LockEngineService, useValue: approveAllLock },
+        { provide: CallLogService, useValue: { record: async () => {} } },
         { provide: ENV, useValue: { MCP_CLIENT_TOKEN: TOKEN } },
       ],
     }).compile();

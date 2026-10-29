@@ -8,6 +8,8 @@ export const envSchema = z.object({
   ADMIN_TOKEN: z.string().optional(),
   REVIEWER_URL: z.string().url().optional(),
   TOOLLOCK_CONFIG: z.string().default('toollock.config.json'),
+  /** Where `init` writes mcp.lock.json (relative to the working directory). */
+  LOCKFILE_PATH: z.string().default('mcp.lock.json'),
 });
 
 export type Env = z.infer<typeof envSchema>;

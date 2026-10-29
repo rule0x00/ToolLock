@@ -17,6 +17,7 @@ export interface UpstreamTool {
 export class UpstreamService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(UpstreamService.name);
   private readonly clients = new Map<string, Client>();
+  private readonly toolsChangedListeners: Array<(serverId: string) => void> = [];
 
   constructor(@Inject(TOOLLOCK_CONFIG) private readonly config: ToolLockConfig) {}
 
@@ -43,19 +44,17 @@ export class UpstreamService implements OnModuleInit, OnModuleDestroy {
     return [...this.clients.keys()];
   }
 
-  /** Fetches the current tool list from every connected upstream (all pages). */
+  /** Called with the server id whenever an upstream sends notifications/tools/list_changed. */
+  onToolsChanged(listener: (serverId: string) => void): void {
+    this.toolsChangedListeners.push(listener);
+  }
+
+  /** Fetches the current tool list from every connected upstream. A failing server contributes no tools. */
   async listAllTools(): Promise<UpstreamTool[]> {
     const perServer = await Promise.all(
-      [...this.clients].map(async ([serverId, client]) => {
+      this.serverIds().map(async (serverId) => {
         try {
-          const tools: Tool[] = [];
-          let cursor: string | undefined;
-          do {
-            const page = await client.listTools(cursor ? { cursor } : undefined);
-            tools.push(...page.tools);
-            cursor = page.nextCursor;
-          } while (cursor);
-          return tools.map((tool) => ({ serverId, tool }));
+          return await this.listServerTools(serverId);
         } catch (err) {
           this.logger.error(`tools/list failed for "${serverId}": ${(err as Error).message}`);
           return [];
@@ -63,6 +62,20 @@ export class UpstreamService implements OnModuleInit, OnModuleDestroy {
       }),
     );
     return perServer.flat();
+  }
+
+  /** Fetches the current tool list (all pages) from one upstream; throws if it can't. */
+  async listServerTools(serverId: string): Promise<UpstreamTool[]> {
+    const client = this.clients.get(serverId);
+    if (!client) throw new Error(`Upstream "${serverId}" is not connected`);
+    const tools: Tool[] = [];
+    let cursor: string | undefined;
+    do {
+      const page = await client.listTools(cursor ? { cursor } : undefined);
+      tools.push(...page.tools);
+      cursor = page.nextCursor;
+    } while (cursor);
+    return tools.map((tool) => ({ serverId, tool }));
   }
 
   async callTool(serverId: string, name: string, args: Record<string, unknown> | undefined): Promise<CallToolResult> {
@@ -73,9 +86,9 @@ export class UpstreamService implements OnModuleInit, OnModuleDestroy {
 
   private async connect(server: UpstreamServerConfig): Promise<Client> {
     const client = new Client({ name: 'toollock-gateway', version: '0.1.0' });
-    // The lock engine re-checks definitions on list_changed (build step 5); for now just log it.
     client.setNotificationHandler(ToolListChangedNotificationSchema, () => {
       this.logger.log(`Upstream "${server.id}" reported tools/list_changed`);
+      for (const listener of this.toolsChangedListeners) listener(server.id);
     });
 
     const transport =
