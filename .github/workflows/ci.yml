@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gateway:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: toollock
+          POSTGRES_PASSWORD: toollock
+          POSTGRES_DB: toollock
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U toollock -d toollock"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      DATABASE_URL: postgres://toollock:toollock@localhost:5432/toollock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            gateway/package-lock.json
+            evil-server/package-lock.json
+      - name: evil-server (spawned by the gateway tests)
+        working-directory: evil-server
+        run: npm ci && npm run typecheck
+      - name: Install
+        working-directory: gateway
+        run: npm ci
+      - name: Typecheck (ts-jest does not typecheck tests)
+        working-directory: gateway
+        run: npm run typecheck
+      - name: Test
+        working-directory: gateway
+        run: npm test
+
+  reviewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: reviewer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: reviewer/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - name: Evals (fails on any false negative outside known gaps)
+        run: python evals/run_evals.py --no-llm
+
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
